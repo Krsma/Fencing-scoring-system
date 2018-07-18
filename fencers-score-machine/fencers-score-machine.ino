@@ -27,29 +27,37 @@ void loop() {
 
   if (WeaponState == 1)
   {
-    ActivateBuzzer();
-    ActivateLED();
+
     Report_toServer(); 
+    ActivateDisplays();
+    RestartBout(); 
   }
 
+  delay(1);
+
 }
 
-void ActivateBuzzer()
+void ActivateDisplays() // activating sound 
 {
   tone(buzzer,1500);
-  delay(1000);
-  noTone(buzzer);
-  
-}
-
-void ActivateLED()
-{
   digitalWrite(Led, HIGH);
+  delay(5000);
+  noTone(buzzer);
   delay(5000);
   digitalWrite(Led, LOW);
 }
+void RestartBout() // reseting the equipment and resynching with the servers
+{
+  
+  tone(buzzer,100);
+  digitalWrite(Led, HIGH);
+  delay(500);
+  noTone(buzzer);
+  digitalWrite(Led, LOW);
 
-void Report_toServer()
+}
+
+void Report_toServer()  //reporting to the central device monitoring both fencers and keeping score
 {
   
 }
