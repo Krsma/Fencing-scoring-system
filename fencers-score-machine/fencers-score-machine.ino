@@ -9,6 +9,7 @@ BLECharacteristic* pCharacteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 
+long int initialtime = 0;
 uint8_t value[4];
 uint32_t timer = 0;
 
@@ -87,6 +88,7 @@ void loop() {
         //  connecting to ble client
         oldDeviceConnected = deviceConnected;
         //TODO led blink
+        initialtime = millis();
     }
 
     
@@ -107,8 +109,19 @@ void loop() {
     RestartBout(); 
   }
 
-  delay(1);
+  delay(2);
   timer++;
+  if (! timer == millis() - initialtime)
+  {
+    timer = millis() - initialtime;
+  }
+  
+  value[0] = timer;
+  value[1] = timer>>8;
+  value[2] = timer>>8;
+  value[3] = timer>>8;
+        
+  pCharacteristic->setValue(value, 4);   //update data
 }
 
 void ActivateDisplays() // activating sound and lights 
