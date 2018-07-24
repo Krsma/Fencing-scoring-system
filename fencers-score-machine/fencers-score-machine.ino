@@ -9,7 +9,7 @@ BLECharacteristic* pCharacteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 
-long int initialtime = 0;
+int initialtime = 0;
 uint8_t value[4];
 uint32_t timer = 0;
 
@@ -21,6 +21,12 @@ uint32_t timer = 0;
 #define Led 6
 
 #define WeaponOut 2
+
+union
+{
+int timer;
+uint8_t union_data[4];
+}converter_union;
 
 int WeaponState = 0;
 
@@ -110,19 +116,19 @@ void loop() {
   }
 
   delay(2);
-  timer++;
+  timer += 2;
   if (! timer == millis() - initialtime)
   {
     timer = millis() - initialtime;
   }
-  
-  value[0] = timer;
-  value[1] = timer>>8;
-  value[2] = timer>>8;
-  value[3] = timer>>8;
+  converter_union.timer = timer;  //timer into byte array
+  value[0] = converter_union.union_data[0];
+  value[1] = converter_union.union_data[1];
+  value[2] = converter_union.union_data[2];
+  value[3] = converter_union.union_data[3];
         
   pCharacteristic->setValue(value, 4);   //update data
-}
+  }
 
 void ActivateDisplays() // activating sound and lights 
 {
@@ -145,12 +151,13 @@ void RestartBout() // reseting the equipment and resynching with the servers
 }
 
 void Report_toServer()  //reporting to the central device monitoring both fencers and keeping score
-{       //TODO change value to signed int base 16 byte
+{       
         
-        value[0] = timer;
-        value[1] = timer>>8;
-        value[2] = timer>>8;
-        value[3] = timer>>8;
+      converter_union.timer = timer;  //timer into byte array and setting BLE value and notifying BLE client
+      value[0] = converter_union.union_data[0];
+      value[1] = converter_union.union_data[1];
+      value[2] = converter_union.union_data[2];
+      value[3] = converter_union.union_data[3];
         
         pCharacteristic->setValue(value, 4);   //notify server and update data
         pCharacteristic->notify();
