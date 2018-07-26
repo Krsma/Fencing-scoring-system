@@ -24,7 +24,7 @@ uint32_t timer = 0;
 
 union
 {
-int timer;
+int Timer_;
 uint8_t union_data[4];
 }converter_union;
 
@@ -74,16 +74,16 @@ void setup() {
 
   
   
-  pinMode(WeaponOut, OUTPUT);
-  pinMode(Led, OUTPUT);
-  pinMode(buzzer, OUTPUT);
+//  pinMode(WeaponOut, OUTPUT);
+ // pinMode(Led, OUTPUT);
+ // pinMode(buzzer, OUTPUT);
 
   // sound / led checkup
 //  tone(buzzer,1500);
-  digitalWrite(Led, HIGH);
+ // digitalWrite(Led, HIGH);
   delay(300);
  // noTone(buzzer);
-  digitalWrite(Led, LOW);
+ // digitalWrite(Led, LOW);
 
 }
 
@@ -98,7 +98,7 @@ void loop() {
     }
 
     
-  WeaponState = digitalRead(WeaponOut);
+  //WeaponState = digitalRead(WeaponOut);
 
   if (WeaponState == 1)
   {
@@ -115,25 +115,51 @@ void loop() {
     RestartBout(); 
   }
 
-  delay(2);
-  timer += 2;
+  delay(1000);
+  timer += 1000;
+  /*
   if (! timer == millis() - initialtime)
   {
     timer = millis() - initialtime;
-  }
-  converter_union.timer = timer;  //timer into byte array
-  value[0] = converter_union.union_data[0];
-  value[1] = converter_union.union_data[1];
-  value[2] = converter_union.union_data[2];
-  value[3] = converter_union.union_data[3];
-        
+  }*/
+  //converter_union.timer = timer;  //timer into byte array
+      Serial.println("Reached manual byte writing");
+
+      /*
+      value[0] = 0x61;
+      value[1] = 0x62;
+      value[2] = 0x63;
+      value[3] = 0x64;
+      */
+      converter_union.Timer_ = timer;
+      value[0] = converter_union.union_data[0];
+      value[1] = converter_union.union_data[1];
+      value[2] = converter_union.union_data[2];
+      value[3] = converter_union.union_data[3];
+
+      Serial.print("Timer value is  ");
+      Serial.println(timer);
+      Serial.print("Union Timer value is  ");
+      Serial.println(converter_union.Timer_);
+      Serial.println("");
+      
+      Serial.print("Bytes are    ");
+      Serial.print(value[0]);
+      Serial.print(" - ");
+      Serial.print(value[1]);
+      Serial.print(" - ");
+      Serial.print(value[2]);
+      Serial.print(" - ");
+      Serial.print(value[3]);
+      Serial.println(" End bytes ");
+      
   pCharacteristic->setValue(value, 4);   //update data
   }
 
 void ActivateDisplays() // activating sound and lights 
 {
  // tone(buzzer,1500);
-  digitalWrite(Led, HIGH);
+ // digitalWrite(Led, HIGH);
   delay(5000);
  // noTone(buzzer);
   delay(5000);
@@ -143,24 +169,26 @@ void RestartBout() // reseting the equipment and resynching with the servers
 {
   //TODO
   //tone(buzzer,100);
-  digitalWrite(Led, HIGH);
+ // digitalWrite(Led, HIGH);
   delay(500);
   //noTone(buzzer);
-  digitalWrite(Led, LOW);
+ // digitalWrite(Led, LOW);
 
 }
 
 void Report_toServer()  //reporting to the central device monitoring both fencers and keeping score
 {       
-        
-      converter_union.timer = timer;  //timer into byte array and setting BLE value and notifying BLE client
-      value[0] = converter_union.union_data[0];
-      value[1] = converter_union.union_data[1];
-      value[2] = converter_union.union_data[2];
-      value[3] = converter_union.union_data[3];
-        
+      /*  
+      converter_union.Timer_ = timer;  //timer into byte array and setting BLE value and notifying BLE client
+      value[0] = 0x61;
+      value[1] = 0x62;
+      value[2] = 0x63;
+      value[3] = 0x64;
+
+        Serial.println (value[0]);
         pCharacteristic->setValue(value, 4);   //notify server and update data
         pCharacteristic->notify();
         delay(10);
+       */
 }
 
