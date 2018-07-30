@@ -72,15 +72,21 @@ void setup() {
   pServer->getAdvertising()->start();
   Serial.println("Waiting a client connection to notify...");
 
+  while (deviceConnected == false)
+  {
+    delay(1000);
+    Serial.println("Waiting to connect");
+  }
+  initialtime = millis();
+
   
-  
-//  pinMode(WeaponOut, OUTPUT);
+ //  pinMode(WeaponOut, OUTPUT);
  // pinMode(Led, OUTPUT);
  // pinMode(buzzer, OUTPUT);
 
   // sound / led checkup
-//  tone(buzzer,1500);
- // digitalWrite(Led, HIGH);
+  // tone(buzzer,1500);
+  // digitalWrite(Led, HIGH);
   delay(300);
  // noTone(buzzer);
  // digitalWrite(Led, LOW);
@@ -88,14 +94,6 @@ void setup() {
 }
 
 void loop() {
-
-  if (deviceConnected && !oldDeviceConnected)
-    {
-        //  connecting to ble client
-        oldDeviceConnected = deviceConnected;
-        //TODO led blink
-        initialtime = millis();
-    }
 
     
   //WeaponState = digitalRead(WeaponOut);
@@ -132,10 +130,10 @@ void loop() {
       value[3] = 0x64;
       */
       converter_union.Timer_ = timer;
-      value[0] = converter_union.union_data[0];
-      value[1] = converter_union.union_data[1];
+      value[0] = converter_union.union_data[3];
+      value[1] = converter_union.union_data[2];
       value[2] = converter_union.union_data[2];
-      value[3] = converter_union.union_data[3];
+      value[3] = converter_union.union_data[0];
 
       Serial.print("Timer value is  ");
       Serial.println(timer);
@@ -178,17 +176,17 @@ void RestartBout() // reseting the equipment and resynching with the servers
 
 void Report_toServer()  //reporting to the central device monitoring both fencers and keeping score
 {       
-      /*  
-      converter_union.Timer_ = timer;  //timer into byte array and setting BLE value and notifying BLE client
-      value[0] = 0x61;
-      value[1] = 0x62;
-      value[2] = 0x63;
-      value[3] = 0x64;
 
-        Serial.println (value[0]);
+      timer = millis() - initialtime;
+      converter_union.Timer_ = timer;
+      value[0] = converter_union.union_data[3];
+      value[1] = converter_union.union_data[2];
+      value[2] = converter_union.union_data[2];
+      value[3] = converter_union.union_data[0];
+      
         pCharacteristic->setValue(value, 4);   //notify server and update data
         pCharacteristic->notify();
         delay(10);
-       */
+       
 }
 
