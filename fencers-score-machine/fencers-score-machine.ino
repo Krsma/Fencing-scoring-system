@@ -13,6 +13,8 @@ int initialtime = 0;
 uint8_t value[4];
 uint32_t timer = 0;
 
+bool HitDetected = false;
+
 #define SERVICE_UUID        "b907675a-c901-4fa1-8224-2e9a69fa70a1"
 #define CHARACTERISTIC_UUID "82352aca-4d9e-4c11-b6b9-4a9889e7f4aa"
 
@@ -95,14 +97,30 @@ void setup() {
 
 void loop() {
 
-    
-  //WeaponState = digitalRead(WeaponOut);
 
   if (WeaponState == 1)
   {
+    delay(2);
+    if (WeaponState == 1)
+    {
+      HitDetected = true; // FIE mandated that the touch is at least 2 ms long
+    }
+    timer = timer +2; //synching
+  }
+    
+  //WeaponState = digitalRead(WeaponOut);
+
+  if (HitDetected)
+  {
     if (deviceConnected)
-      {
-         Report_toServer(); 
+      { 
+
+        Report_toServer(); 
+        while(timer + 3000 < millis())
+        {
+          //locking the timer for  3 seconds
+        }
+        timer = timer + 3000; //synching back
       }
       else
       {
@@ -130,10 +148,10 @@ void loop() {
       value[3] = 0x64;
       */
       converter_union.Timer_ = timer;
-      value[0] = converter_union.union_data[3];
-      value[1] = converter_union.union_data[2];
+      value[0] = converter_union.union_data[0];
+      value[1] = converter_union.union_data[1];
       value[2] = converter_union.union_data[2];
-      value[3] = converter_union.union_data[0];
+      value[3] = converter_union.union_data[3];
 
       Serial.print("Timer value is  ");
       Serial.println(timer);
@@ -189,4 +207,3 @@ void Report_toServer()  //reporting to the central device monitoring both fencer
         delay(10);
        
 }
-
